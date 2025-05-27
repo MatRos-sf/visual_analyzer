@@ -50,37 +50,23 @@ def capture_files_and_directories(
     return collected_files, collected_dirs
 
 
-# def create_temp_files(paths: List[Path]) -> None:
-#     """
-#     Create a temporary directory tree at the given path, mirroring the existing directory structure.
-#
-#     This function walks through the directory structure at `path` and recreates the same
-#     structure inside a "_temp" subdirectory. Useful for preparing isolated environments
-#     or backup folder trees.
-#     """
-#     for path in paths:
-#
-#     # files = []
-#     temp_file_path = path / TEMP_DIR_NAME_PATH
-#     temp_file_path.mkdir(parents=True, exist_ok=True, mode=0o777)
-#
-#     for root, dirs, _ in os.walk(path):
-#         if str(TEMP_DIR_NAME_PATH) in str(Path(root)):
-#             continue
-#         relative_path = Path(root).relative_to(path)
-#         if relative_path == Path("."):
-#             continue
-#
-#         new_dir = temp_file_path / relative_path
-#         try:
-#             original_mask = os.umask(0)
-#             new_dir.mkdir(parents=True, exist_ok=True, mode=0o777)
-#             files.append(new_dir)
-#         except PermissionError:
-#             print(f"Permission denied {new_dir}")
-#         finally:
-#             os.umask(original_mask)
-#     return files
+def create_temp_files(paths: List[Path], main_path: Path) -> None:
+    """
+    Create temporary directories inside main_path/TEMP_DIR_NAME_PATH
+    matching the structure of given paths.
+    """
+    temp_file_path = main_path / TEMP_DIR_NAME_PATH
+    temp_file_path.mkdir(parents=True, exist_ok=True, mode=0o777)
+
+    original_mask = os.umask(0)
+    for path in paths:
+        temp_dir = temp_file_path / path
+        try:
+            temp_dir.mkdir(parents=True, exist_ok=True, mode=0o777)
+        except PermissionError:
+            print(f"Permission denied {temp_dir}")
+        finally:
+            os.umask(original_mask)
 
 
 def check_type(path: str | Path) -> str:
