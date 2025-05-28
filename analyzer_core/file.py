@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import List, Tuple
 
 PATH = Path(os.getcwd()).parent
-FILES_PATH = Path(__file__).parent.parent
+FILES_PATH = Path(__file__).parent.parent / "files"
 TEMP_DIR_NAME_PATH = Path("_temp")
 
 

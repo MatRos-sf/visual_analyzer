@@ -3,6 +3,7 @@
 photo-analyzer/              # Główne repo
 │
 ├── analyzer_core/           # Submoduł (jako osobny repozytorium Git)
+│   ├── file.py             # Function for working with files
 │   ├── face_detector.py
 │   ├── tagger.py
 │   ├── recognizer.py
