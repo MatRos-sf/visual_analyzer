@@ -12,8 +12,8 @@ from PIL import Image
 
 from analyzer_core.exceptions import NotSupported
 
-PATTERN_VA_DESCRIPTION = r"va\|({.*})\|"
-SUPPORTED_EXTEND = ["jpg", "jpeg"]
+PATTERN_VA_DESCRIPTION_RE = r"va\|({.*})\|"
+SUPPORTED_EXTENSION = ["jpg", "jpeg"]
 
 
 class MediaType(str, Enum):
@@ -22,21 +22,18 @@ class MediaType(str, Enum):
     UNKNOWN = "unknown"
 
 
-def extract_info_type(path: str | Path) -> Tuple:
+def extract_info_type(path: str | Path) -> Tuple[MediaType, str]:
     """
-    Return the tuple of high-level MIME type of the given file path and extended MIME type.
-
-    :raise:
-        NotSupported:   If the MINE type cannot be determined
-
-    :return: Top level MINE type (e.g. 'image', 'video' ...)
+    Return (media_type, extension) for the given path.
+    Raises:
+        NotSupported:   If the MIME type cannot be determined
     """
     path = Path(path)
     mine_type, _ = mimetypes.guess_type(path)
     if mine_type is None:
         raise NotSupported(f"File {path} is not supported (unknow MIME type).")
-    _type, extend = mine_type.split("/")
-    return MediaType(_type), extend
+    _type, extension = mine_type.split("/")
+    return MediaType(_type), extension
 
 
 class AbstractMetadata(ABC):
@@ -56,7 +53,7 @@ class AbstractMetadata(ABC):
 
 class MetaDataManager(AbstractMetadata):
     def __init__(
-        self, media_path: Path, pattern_to_match: re.Pattern = PATTERN_VA_DESCRIPTION
+        self, media_path: Path, pattern_to_match: re.Pattern = PATTERN_VA_DESCRIPTION_RE
     ):
         self.media_path = media_path
         self.pattern_to_match = pattern_to_match
@@ -112,11 +109,11 @@ class Media:
 
         media_type, extend = extract_info_type(original_path)
         self.media_type = media_type
-        self.media_extend = extend
+        self.media_extension = extend
 
     def load_metadata(self) -> None:
         """
-        Set 'raw_description' and 'facec' attributes
+        Set 'raw_description' and 'faces' attributes
         """
         self.raw_description = self.metadata_manager.decode_description()
         self.faces = self.metadata_manager.extract_faces_info(self.raw_description)
@@ -134,13 +131,13 @@ class MediaCollection:
         self.videos = []
         self.unsupported_media = []
 
-        self.__set_atributes(media)
+        self.__set_attributes(media)
 
-    def __set_atributes(self, media: List[Media]):
+    def __set_attributes(self, media: List[Media]):
         for media in media:
             if (
                 media.media_type not in [MediaType.IMAGE, MediaType.VIDEO]
-                and media.media_extend not in SUPPORTED_EXTEND
+                or media.media_extension not in SUPPORTED_EXTENSION
             ):
                 warn(f"Media {media.original_path} is not supported.")
                 continue

@@ -50,6 +50,13 @@ def create_temp_files(paths: List[Path], main_path: Path) -> None:
     Create temporary directories inside main_path/TEMP_DIR_NAME_PATH
     matching the structure of given paths.
     """
+    import warnings
+
+    warnings.warn(
+        "create_temp_files is deprecated and will be removed in a future release.",
+        DeprecationWarning,
+    )
+
     temp_file_path = main_path / TEMP_DIR_NAME_PATH
     temp_file_path.mkdir(parents=True, exist_ok=True, mode=0o777)
 

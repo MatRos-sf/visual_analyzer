@@ -1,3 +1,4 @@
 class NotSupported(Exception):
-    def __init__(self, message, *args):
-        super().__init__(message, *args)
+    """Raised when a file type or operation is not supported."""
+
+    pass
