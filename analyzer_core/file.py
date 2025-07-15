@@ -1,4 +1,3 @@
-import mimetypes
 import os
 from pathlib import Path
 from typing import List, Tuple
@@ -6,11 +5,6 @@ from typing import List, Tuple
 PATH = Path(os.getcwd()).parent
 FILES_PATH = Path(__file__).parent.parent / "files"
 TEMP_DIR_NAME_PATH = Path("_temp")
-
-
-class NotSupported(Exception):
-    def __init__(self, message, *args):
-        super().__init__(message, *args)
 
 
 def capture_files_and_directories(
@@ -50,6 +44,7 @@ def capture_files_and_directories(
     return collected_files, collected_dirs
 
 
+# TODO: deprecated function
 def create_temp_files(paths: List[Path], main_path: Path) -> None:
     """
     Create temporary directories inside main_path/TEMP_DIR_NAME_PATH
@@ -67,19 +62,3 @@ def create_temp_files(paths: List[Path], main_path: Path) -> None:
             print(f"Permission denied {temp_dir}")
         finally:
             os.umask(original_mask)
-
-
-def check_type(path: str | Path) -> str:
-    """
-    Return the high-level MIME type of the given file path.
-
-    :raise:
-        NotSupported:   If the MINE type cannot be determined
-
-    :return: Top level MINE type (e.g. 'image', 'video' ...)
-    """
-    path = Path(path)
-    mine_type, _ = mimetypes.guess_type(path)
-    if mine_type is None:
-        raise NotSupported(f"File {path} is not supported (unknow MIME type).")
-    return mine_type.split("/")[0]
