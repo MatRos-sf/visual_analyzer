@@ -9,7 +9,6 @@ from sqlalchemy.orm import sessionmaker
 class DataBase:
     def __init__(self, database_url, base_model: Any, echo: bool = False):
         self.engine = create_engine(database_url, echo=echo)
-        self.session = sessionmaker(bind=self.engine)
         self.Session = sessionmaker(bind=self.engine)
 
         # init db
